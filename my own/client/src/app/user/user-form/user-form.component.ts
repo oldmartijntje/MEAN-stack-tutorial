@@ -6,7 +6,7 @@ import { UserInterface } from '../user.interface';
 @Component({
     selector: 'app-user-form',
     template: `
-   <form class="employee-form" autocomplete="off" [formGroup]="userForm" (ngSubmit)="submitForm()">
+   <form class="user-form" autocomplete="off" [formGroup]="userForm" (ngSubmit)="submitForm()">
      <div class="form-floating mb-3">
        <input class="form-control" type="text" id="name" formControlName="name" placeholder="Name" required>
        <label for="name">Name</label>
@@ -36,27 +36,11 @@ import { UserInterface } from '../user.interface';
        </div>
      </div>
  
-     <div class="mb-3">
-       <div class="form-check">
-         <input class="form-check-input" type="radio" formControlName="level" name="level" id="level-junior" value="junior" required>
-         <label class="form-check-label" for="level-junior">Junior</label>
-       </div>
-       <div class="form-check">
-         <input class="form-check-input" type="radio" formControlName="level" name="level" id="level-mid" value="mid">
-         <label class="form-check-label" for="level-mid">Mid</label>
-       </div>
-       <div class="form-check">
-         <input class="form-check-input" type="radio" formControlName="level" name="level" id="level-senior"
-           value="senior">
-         <label class="form-check-label" for="level-senior">Senior</label>
-       </div>
-     </div>
- 
      <button class="btn btn-primary" type="submit" [disabled]="userForm.invalid">Add</button>
    </form>
  `,
     styles: [
-        `.employee-form {
+        `.user-form {
      max-width: 560px;
      margin-left: auto;
      margin-right: auto;
