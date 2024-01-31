@@ -2,6 +2,12 @@ import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { HttpClientModule } from '@angular/common/http';
 import { RouterModule } from '@angular/router';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatNativeDateModule } from '@angular/material/core';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { MatInputModule } from '@angular/material/input';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { provideNativeDateAdapter } from '@angular/material/core';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -12,6 +18,8 @@ import { UserFormComponent } from './user/user-form/user-form.component';
 import { ReactiveFormsModule } from '@angular/forms';
 import { AddUserComponent } from './user/add-user/add-user.component';
 import { EditUserComponent } from './user/edit-user/edit-user.component';
+import { AddTaskComponent } from './task/add-task/add-task.component';
+import { EditTaskComponent } from './task/edit-task/edit-task.component';
 
 @NgModule({
     declarations: [
@@ -21,16 +29,23 @@ import { EditUserComponent } from './user/edit-user/edit-user.component';
         TaskFormComponent,
         UserFormComponent,
         AddUserComponent,
-        EditUserComponent
+        EditUserComponent,
+        AddTaskComponent,
+        EditTaskComponent
     ],
     imports: [
         BrowserModule,
         AppRoutingModule,
         HttpClientModule,
         RouterModule,
-        ReactiveFormsModule
+        ReactiveFormsModule,
+        MatDatepickerModule,
+        MatNativeDateModule,
+        BrowserAnimationsModule,
+        MatInputModule,
+        MatFormFieldModule
     ],
-    providers: [],
+    providers: [provideNativeDateAdapter()],
     bootstrap: [AppComponent]
 })
 export class AppModule { }

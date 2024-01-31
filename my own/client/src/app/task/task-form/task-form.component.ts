@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { BehaviorSubject } from 'rxjs';
 import { TaskInterface } from '../../task/task.interface';
@@ -22,25 +22,50 @@ import { TaskInterface } from '../../task/task.interface';
      </div>
  
      <div class="form-floating mb-3">
-       <input class="form-control" type="text" formControlName="position" placeholder="Position" required>
-       <label for="position">Position</label>
+       <input class="form-control" type="text" formControlName="description" placeholder="Description" required>
+       <label for="position">Description</label>
      </div>
  
      <div *ngIf="description.invalid && (description.dirty || description.touched)" class="alert alert-danger">
  
        <div *ngIf="description.errors?.['required']">
-         Position is required.
+         Description is required.
        </div>
        <div *ngIf="description.errors?.['minlength']">
-         Position must be at least 5 characters long.
+       Description must be at least 5 characters long.
        </div>
      </div>
+
+     <div class="form-floating mb-3">
+        <input
+            class="form-control"
+            [matDatepicker]="picker"
+            formControlName="when"
+            placeholder="Date"
+            required
+        />
+        <label for="position">Date</label>
+        <mat-datepicker-toggle matIconSuffix  [for]="picker"></mat-datepicker-toggle>
+        <mat-datepicker #picker></mat-datepicker>
+        </div>
+
+        <div *ngIf="when.invalid && (when.dirty || when.touched)" class="alert alert-danger">
+        <div *ngIf="when.errors?.['required']">
+            Date is required.
+        </div>
+        </div>
+    
  
-     <div class="mb-3">
+        <div class="mb-3">
        <div class="form-check">
-         <input class="form-check-input" type="checkbox" formControlName="done" name="done" id="done">
-         <label class="form-check-label" for="done">Done</label>
+         <input class="form-check-input" type="radio" formControlName="done" name="done" id="done-true" value="true" required>
+         <label class="form-check-label" for="done-true">Jep</label>
        </div>
+       <div class="form-check">
+         <input class="form-check-input" type="radio" formControlName="done" name="done" id="done-false" value="false">
+         <label class="form-check-label" for="done-false">Nope</label>
+       </div>
+
      </div>
  
      <button class="btn btn-primary me-1" type="submit" [disabled]="taskForm.invalid">Add</button>
@@ -75,7 +100,7 @@ export class TaskFormComponent implements OnInit {
     get done() { return this.taskForm.get('done')!; }
     get user() { return this.taskForm.get('user')!; }
 
-    // when and user are not defined in the html form yet
+    // user are not defined in the html form yet
 
     ngOnInit() {
         this.initialState.subscribe(task => {
