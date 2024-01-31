@@ -36,7 +36,9 @@ import { UserInterface } from '../user.interface';
        </div>
      </div>
  
-     <button class="btn btn-primary" type="submit" [disabled]="userForm.invalid">Add</button>
+     <button class="btn btn-primary me-1" type="submit" [disabled]="userForm.invalid">Add</button>
+     <button class="btn btn-danger" type="submit" [routerLink]="'/users'">Cancel</button>
+
    </form>
  `,
     styles: [

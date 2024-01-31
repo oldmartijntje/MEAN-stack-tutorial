@@ -43,7 +43,8 @@ import { TaskInterface } from '../../task/task.interface';
        </div>
      </div>
  
-     <button class="btn btn-primary" type="submit" [disabled]="taskForm.invalid">Add</button>
+     <button class="btn btn-primary me-1" type="submit" [disabled]="taskForm.invalid">Add</button>
+     <button class="btn btn-danger" type="submit" [routerLink]="'/tasks'">Cancel</button>
    </form>
  `,
     styles: [
@@ -80,7 +81,7 @@ export class TaskFormComponent implements OnInit {
         this.initialState.subscribe(task => {
             this.taskForm = this.fb.group({
                 name: [task.name, [Validators.required]],
-                description: [task.description, [Validators.minLength(5)]],
+                description: [task.description, []],
                 when: [task.when, [Validators.required]],
                 done: [task.done, [Validators.required]],
                 user: [task.user, []],

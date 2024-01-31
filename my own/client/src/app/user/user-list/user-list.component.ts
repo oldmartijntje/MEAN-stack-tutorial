@@ -8,6 +8,7 @@ import { BackendService } from '../../backendConnection/backend.service';
     selector: 'app-user-list',
     template: `
    <h2 class="text-center m-5">User List</h2>
+   <button class="btn btn-primary me-1" [routerLink]="'/tasks'">Go to Tasks</button>
  
    <table class="table table-striped table-bordered">
        <thead>

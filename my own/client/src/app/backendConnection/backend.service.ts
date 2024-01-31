@@ -43,9 +43,9 @@ export class BackendService {
     }
 
     private refreshUsers() {
-        this.httpClient.get<TaskInterface[]>(`${this.url}/tasks`)
-            .subscribe(Tasks => {
-                this.Tasks$.next(Tasks);
+        this.httpClient.get<TaskInterface[]>(`${this.url}/users`)
+            .subscribe(Users => {
+                this.Users$.next(Users);
             });
     }
 
