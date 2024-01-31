@@ -5,6 +5,6 @@ export interface TaksInterface {
     when: Date;
     done: boolean;
     description?: string;
-    person: string;
+    user?: mongodb.ObjectId | string;
     _id?: mongodb.ObjectId;
 }
