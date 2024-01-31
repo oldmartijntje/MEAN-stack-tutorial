@@ -1,6 +1,6 @@
 import * as mongodb from "mongodb";
 
-export interface TaksInterface {
+export interface TaskInterface {
     name: string;
     when: Date;
     done: boolean;
