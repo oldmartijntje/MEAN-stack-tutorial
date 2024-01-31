@@ -1,23 +1,20 @@
 export const userJsonSchema = {
     $jsonSchema: {
         bsonType: "object",
-        required: ["name", "position", "level"],
+        required: ["name", "accessLevel"],
         additionalProperties: false,
         properties: {
-            _id: {},
+            _id: {
+                bsonType: "objectId",
+                description: "'_id' is an optional field and must be a valid ObjectId",
+            },
             name: {
                 bsonType: "string",
                 description: "'name' is required and is a string",
             },
-            position: {
+            accessLevel: {
                 bsonType: "string",
-                description: "'position' is required and is a string",
-                minLength: 5
-            },
-            level: {
-                bsonType: "string",
-                description: "'level' is required and is one of 'junior', 'mid', or 'senior'",
-                enum: ["junior", "mid", "senior"],
+                description: "'accessLevel' is required and is a string",
             },
         },
     },
