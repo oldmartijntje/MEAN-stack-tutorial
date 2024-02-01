@@ -10,8 +10,8 @@ import { BackendService } from '../../backendConnection/backend.service';
     template: `
    <form class="task-form" autocomplete="off" [formGroup]="taskForm" (ngSubmit)="submitForm()">
         <div class="form-floating mb-3">
-        <input class="form-control" type="text" id="name" formControlName="name" placeholder="Name" required>
-        <label for="name">Name</label>
+            <input class="form-control" type="text" id="name" formControlName="name" placeholder="Name" required>
+            <label for="name">Name</label>
         </div>
  
         <div *ngIf="name.invalid && (name.dirty || name.touched)" class="alert alert-danger">
@@ -24,8 +24,8 @@ import { BackendService } from '../../backendConnection/backend.service';
         </div>
  
         <div class="form-floating mb-3">
-        <input class="form-control" type="text" formControlName="description" placeholder="Description" required>
-        <label for="position">Description</label>
+            <input class="form-control" type="text" formControlName="description" placeholder="Description" required>
+            <label for="position">Description</label>
         </div>
  
         <div *ngIf="description.invalid && (description.dirty || description.touched)" class="alert alert-danger">
