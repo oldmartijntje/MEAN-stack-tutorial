@@ -1,8 +1,9 @@
 import { Component } from '@angular/core';
-import { Observable } from 'rxjs';
+import { BehaviorSubject, Observable } from 'rxjs';
 
 import { TaskInterface } from '../task.interface';
 import { BackendService } from '../../backendConnection/backend.service';
+import { UserInterface } from '../../user/user.interface';
 
 @Component({
     selector: 'app-task-list',
@@ -28,7 +29,7 @@ import { BackendService } from '../../backendConnection/backend.service';
                <td>{{task.when}}</td>
                <td>{{task.done}}</td>
                <td>{{task.description}}</td>
-               <td>{{task.user}}</td>
+               <td>{{getUserName(task.user)}}</td>
                <td>
                    <button class="btn btn-primary me-1" [routerLink]="['edit/', task._id]">Edit</button>
                    <button class="btn btn-danger" (click)="deleteTask(task._id || '')">Delete</button>
@@ -43,11 +44,34 @@ import { BackendService } from '../../backendConnection/backend.service';
 })
 export class TaskListComponent {
     tasks$: Observable<TaskInterface[]> = new Observable();
+    user: { [key: string]: BehaviorSubject<UserInterface> } = {};
 
     constructor(private backendService: BackendService) { }
 
     ngOnInit(): void {
         this.fetchTasks();
+    }
+
+    getUserName(id: string | undefined): string {
+        if (!id || id == ' ') {
+            return '';
+        }
+        if (!this.user[id]) {
+            this.user[id] = new BehaviorSubject<UserInterface>({});
+            this.backendService.getUser(id).subscribe({
+                next: (user: UserInterface) => {
+                    this.user[id].next(user);
+                },
+                error: (error: any) => {
+                    if (error.status == 404) {
+                        this.user[id].next({ name: 'User not found' });
+                    } else {
+                        console.error('An error occurred:', error);
+                    }
+                }
+            });
+        }
+        return this.user[id].value.name || '';
     }
 
     deleteTask(id: string): void {

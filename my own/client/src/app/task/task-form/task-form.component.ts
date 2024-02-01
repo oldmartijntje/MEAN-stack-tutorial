@@ -1,75 +1,89 @@
 import { Component, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
-import { BehaviorSubject } from 'rxjs';
+import { BehaviorSubject, Observable } from 'rxjs';
 import { TaskInterface } from '../../task/task.interface';
+import { UserInterface } from '../../user/user.interface';
+import { BackendService } from '../../backendConnection/backend.service';
 
 @Component({
     selector: 'app-task-form',
     template: `
    <form class="task-form" autocomplete="off" [formGroup]="taskForm" (ngSubmit)="submitForm()">
-     <div class="form-floating mb-3">
-       <input class="form-control" type="text" id="name" formControlName="name" placeholder="Name" required>
-       <label for="name">Name</label>
-     </div>
+        <div class="form-floating mb-3">
+        <input class="form-control" type="text" id="name" formControlName="name" placeholder="Name" required>
+        <label for="name">Name</label>
+        </div>
  
-     <div *ngIf="name.invalid && (name.dirty || name.touched)" class="alert alert-danger">
-       <div *ngIf="name.errors?.['required']">
-         Name is required.
-       </div>
-       <div *ngIf="name.errors?.['minlength']">
-         Name must be at least 3 characters long.
-       </div>
-     </div>
+        <div *ngIf="name.invalid && (name.dirty || name.touched)" class="alert alert-danger">
+            <div *ngIf="name.errors?.['required']">
+                Name is required.
+            </div>
+            <div *ngIf="name.errors?.['minlength']">
+                Name must be at least 3 characters long.
+            </div>
+        </div>
  
-     <div class="form-floating mb-3">
-       <input class="form-control" type="text" formControlName="description" placeholder="Description" required>
-       <label for="position">Description</label>
-     </div>
+        <div class="form-floating mb-3">
+        <input class="form-control" type="text" formControlName="description" placeholder="Description" required>
+        <label for="position">Description</label>
+        </div>
  
-     <div *ngIf="description.invalid && (description.dirty || description.touched)" class="alert alert-danger">
- 
-       <div *ngIf="description.errors?.['required']">
-         Description is required.
-       </div>
-       <div *ngIf="description.errors?.['minlength']">
-       Description must be at least 5 characters long.
-       </div>
-     </div>
+        <div *ngIf="description.invalid && (description.dirty || description.touched)" class="alert alert-danger">
+    
+            <div *ngIf="description.errors?.['required']">
+                Description is required.
+            </div>
+            <div *ngIf="description.errors?.['minlength']">
+            Description must be at least 5 characters long.
+            </div>
+        </div>
 
-     <div class="form-floating mb-3">
-        <input
-            class="form-control"
-            [matDatepicker]="picker"
-            formControlName="when"
-            placeholder="Date"
-            required
-        />
-        <label for="position">Date</label>
-        <mat-datepicker-toggle matIconSuffix  [for]="picker"></mat-datepicker-toggle>
-        <mat-datepicker #picker></mat-datepicker>
+        <div class="form-floating mb-3">
+            <input
+                class="form-control"
+                type="date"
+                id="when"
+                name="when"
+                required
+                formControlName="when"
+            />
+            <label for="when">Date</label>
         </div>
 
         <div *ngIf="when.invalid && (when.dirty || when.touched)" class="alert alert-danger">
-        <div *ngIf="when.errors?.['required']">
-            Date is required.
-        </div>
+            <div *ngIf="when.errors?.['required']">
+                Date is required.
+            </div>
         </div>
     
  
         <div class="mb-3">
-       <div class="form-check">
-         <input class="form-check-input" type="radio" formControlName="done" name="done" id="done-true" value="true" required>
-         <label class="form-check-label" for="done-true">Jep</label>
-       </div>
-       <div class="form-check">
-         <input class="form-check-input" type="radio" formControlName="done" name="done" id="done-false" value="false">
-         <label class="form-check-label" for="done-false">Nope</label>
-       </div>
+            <label for="done">Done?</label>
+            <div class="form-check">
+                <input class="form-check-input" type="radio" formControlName="done" name="done" id="done-true" value="{{true}}" required>
+                <label class="form-check-label" for="done-true">Jep</label>
+            </div>
+            <div class="form-check">
+                <input class="form-check-input" type="radio" formControlName="done" name="done" id="done-false" value="{{false}}">
+                <label class="form-check-label" for="done-false">Nope</label>
+            </div>
+        </div>
 
-     </div>
+        <div class="mb-3">
+            <label for="user">User:</label>
+            <div class="form-check" *ngFor="let user of users$ | async">
+                <input class="form-check-input" type="radio" formControlName="user" name="user" id="user-{{user._id}}" value="{{user._id}}" required>
+                <label class="form-check-label" for="user-{{user._id}}">{{user.name}} - {{user.accessLevel}}</label>
+            </div>
+            <div class="form-check">
+                <input class="form-check-input" type="radio" formControlName="user" name="user" id="user-false" value="{{' '}}">
+                <label class="form-check-label" for="user-false">Nope</label>
+            </div>
+        </div>
  
-     <button class="btn btn-primary me-1" type="submit" [disabled]="taskForm.invalid">Add</button>
-     <button class="btn btn-danger" type="submit" [routerLink]="'/tasks'">Cancel</button>
+        <button class="btn btn-primary me-1" type="submit" [disabled]="taskForm.invalid">Add</button>
+        <button class="btn btn-danger" type="submit" [routerLink]="'/tasks'">Cancel</button>
+
    </form>
  `,
     styles: [
@@ -81,6 +95,8 @@ import { TaskInterface } from '../../task/task.interface';
     ]
 })
 export class TaskFormComponent implements OnInit {
+    users$: Observable<UserInterface[]> = new Observable();
+
     @Input()
     initialState: BehaviorSubject<TaskInterface> = new BehaviorSubject({});
 
@@ -92,7 +108,8 @@ export class TaskFormComponent implements OnInit {
 
     taskForm: FormGroup = new FormGroup({});
 
-    constructor(private fb: FormBuilder) { }
+    constructor(private fb: FormBuilder,
+        private backendService: BackendService) { }
 
     get name() { return this.taskForm.get('name')!; }
     get description() { return this.taskForm.get('description')!; }
@@ -103,6 +120,7 @@ export class TaskFormComponent implements OnInit {
     // user are not defined in the html form yet
 
     ngOnInit() {
+        this.fetchUsers();
         this.initialState.subscribe(task => {
             this.taskForm = this.fb.group({
                 name: [task.name, [Validators.required]],
@@ -114,6 +132,10 @@ export class TaskFormComponent implements OnInit {
         });
 
         this.taskForm.valueChanges.subscribe((val) => { this.formValuesChanged.emit(val); });
+    }
+
+    private fetchUsers(): void {
+        this.users$ = this.backendService.getUsers();
     }
 
     submitForm() {
