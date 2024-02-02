@@ -1,5 +1,5 @@
-import { Component } from '@angular/core';
-import { BehaviorSubject, Observable } from 'rxjs';
+import { Component, OnInit } from '@angular/core';
+import { BehaviorSubject, Observable, take } from 'rxjs';
 
 import { TaskInterface } from '../task.interface';
 import { BackendService } from '../../backendConnection/backend.service';
@@ -22,9 +22,45 @@ import { UserInterface } from '../../user/user.interface';
                <th>Action</th>
            </tr>
        </thead>
+       <tbody>
+           <tr>
+               <th><input type="text" [(ngModel)]="filters.name" placeholder="Filter on names"></th>
+               <th>
+                   <input type="text" [(ngModel)]="filters.when" id="when" placeholder="YYYY-MM-DD">
+                   <label class="form-check-label" for="when">(YYYY-MM-DD)</label>
+                </th>
+               <th>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="done" id="done-true" value="{{true}}" [(ngModel)]="filters.done">
+                        <label class="form-check-label" for="done-true">Jep</label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="done" id="done-false" value="{{false}}" [(ngModel)]="filters.done">
+                        <label class="form-check-label" for="done-false">Nope</label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="done" id="done-any" value="{{undefined}}" [(ngModel)]="filters.done">
+                        <label class="form-check-label" for="done-false">Any</label>
+                    </div>
+
+                </th>
+               <th><input type="text" [(ngModel)]="filters.description" placeholder="Filter on descriptions"></th>
+               <th>
+                    <select class="form-select" [(ngModel)]="filters.user" name="done">
+                        <option *ngFor="let user of userList$ | async" value="{{user._id}}">{{user.accessLevel}} - {{user.name}}</option>
+                        <option value=" ">None</option>
+                        <option value="">Any</option>
+                    </select>
+                </th>
+               <th>
+                <button class="btn btn-primary me-1" (click)="filterTasks()">Filter</button>
+                <button class="btn btn-danger" (click)="ignoreFilters()">Remove</button>
+            </th>
+           </tr>
+       </tbody>
  
        <tbody>
-           <tr *ngFor="let task of tasks$ | async">
+           <tr *ngFor="let task of displayedTasks">
                <td>{{task.name}}</td>
                <td>{{calculateDate(task.when)}}: {{task.when}}</td>
                <td>{{isItDone(task.done)}}</td>
@@ -40,16 +76,63 @@ import { UserInterface } from '../../user/user.interface';
  
    <button class="btn btn-primary mt-3" [routerLink]="['new']">Add a New Task</button>
  `,
-    styles: ``
+    styles: `th>input { width: 100%; }`
 })
-export class TaskListComponent {
+export class TaskListComponent implements OnInit {
     tasks$: Observable<TaskInterface[]> = new Observable();
     user: { [key: string]: BehaviorSubject<UserInterface> } = {};
+    userList$: Observable<UserInterface[]> = new Observable();
+
+    filters: TaskInterface = {};
+    currentTasks: TaskInterface[] = [];
+    filteredTasks: TaskInterface[] = [];
+    filtered: boolean = false;
+
+    displayedTasks: TaskInterface[] = [];
 
     constructor(private backendService: BackendService) { }
 
     ngOnInit(): void {
         this.fetchTasks();
+        this.fetchUsers();
+        this.tasks$.subscribe({
+            next: (tasks: TaskInterface[]) => {
+                this.currentTasks = tasks;
+                if (!this.filtered) {
+                    this.displayedTasks = this.currentTasks;
+                }
+            }
+        });
+    }
+
+    filterTasks(): void {
+        var sendingFilters = { ...this.filters };
+        if (typeof sendingFilters.done === 'string' && sendingFilters.done === 'true') {
+            sendingFilters.done = true;
+        } else if (typeof sendingFilters.done === 'string' && sendingFilters.done === 'false') {
+            sendingFilters.done = false;
+        } else {
+            delete sendingFilters.done;
+        }
+
+        this.backendService.getTasksFiltered(sendingFilters).pipe(
+            take(1)
+        ).subscribe({
+            next: (tasks: TaskInterface[]) => {
+                this.filteredTasks = tasks;
+                this.displayedTasks = tasks;
+                this.filtered = true;
+            }
+        });
+    }
+
+    private fetchUsers(): void {
+        this.userList$ = this.backendService.getUsers();
+    }
+
+    ignoreFilters(): void {
+        this.filtered = false;
+        this.displayedTasks = this.currentTasks;
     }
 
     getUserName(id: string | undefined): string {

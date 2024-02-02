@@ -60,15 +60,10 @@ import { BackendService } from '../../backendConnection/backend.service';
         <div class="mb-3">
             <label for="done">Done?</label>
             <div class="form-check">
-                <input class="form-check-input" type="radio" formControlName="done" name="done" id="done-true" value="{{true}}" required>
-                <label class="form-check-label" for="done-true">Jep</label>
-            </div>
-            <div class="form-check">
-                <input class="form-check-input" type="radio" formControlName="done" name="done" id="done-false" value="{{false}}">
-                <label class="form-check-label" for="done-false">Nope</label>
+                <input class="form-check-input" type="checkbox" formControlName="done" name="done" id="done-checkbox" value="true">
+                <label class="form-check-label" for="done-checkbox">Done</label>
             </div>
         </div>
-
         <div class="mb-3">
             <label for="user">User:</label>
             <div class="form-check" *ngFor="let user of users$ | async">
@@ -139,6 +134,7 @@ export class TaskFormComponent implements OnInit {
     }
 
     submitForm() {
+        this.taskForm.value.done = this.taskForm.value.done === 'true';
         this.formSubmitted.emit(this.taskForm.value);
     }
 }

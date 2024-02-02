@@ -14,6 +14,24 @@ taskRouter.get("/", async (_req, res) => {
     }
 });
 
+taskRouter.get("/filtered/:query", async (req, res) => {
+    try {
+        var query = JSON.parse(req?.params?.query);
+        // const tasks = await collections.tasks.find({}).toArray();
+        for (const key in query) {
+            if (query[key] === '') {
+                delete query[key];
+            } else if (typeof query[key] === 'string') {
+                query[key] = { $regex: query[key], $options: 'i' }
+            }
+        }
+        const tasks = await collections.tasks.find(query).toArray();
+        res.status(200).send(tasks);
+    } catch (error) {
+        res.status(500).send(error.message);
+    }
+});
+
 taskRouter.get("/:id", async (req, res) => {
     try {
         const id = req?.params?.id;

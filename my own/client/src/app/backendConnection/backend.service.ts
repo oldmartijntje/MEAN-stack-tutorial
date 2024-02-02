@@ -42,6 +42,10 @@ export class BackendService {
         return this.httpClient.delete(`${this.url}/tasks/${id}`, { responseType: 'text' });
     }
 
+    getTasksFiltered(filters: TaskInterface): Observable<TaskInterface[]> {
+        return this.httpClient.get<TaskInterface[]>(`${this.url}/tasks/filtered/${JSON.stringify(filters)}`);
+    }
+
     private refreshUsers() {
         this.httpClient.get<TaskInterface[]>(`${this.url}/users`)
             .subscribe(Users => {

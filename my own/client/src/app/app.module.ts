@@ -15,7 +15,7 @@ import { TaskListComponent } from './task/task-list/task-list.component';
 import { UserListComponent } from './user/user-list/user-list.component';
 import { TaskFormComponent } from './task/task-form/task-form.component';
 import { UserFormComponent } from './user/user-form/user-form.component';
-import { ReactiveFormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { AddUserComponent } from './user/add-user/add-user.component';
 import { EditUserComponent } from './user/edit-user/edit-user.component';
 import { AddTaskComponent } from './task/add-task/add-task.component';
@@ -43,7 +43,8 @@ import { EditTaskComponent } from './task/edit-task/edit-task.component';
         MatNativeDateModule,
         BrowserAnimationsModule,
         MatInputModule,
-        MatFormFieldModule
+        MatFormFieldModule,
+        FormsModule
     ],
     providers: [provideNativeDateAdapter()],
     bootstrap: [AppComponent]
