@@ -26,8 +26,8 @@ import { UserInterface } from '../../user/user.interface';
        <tbody>
            <tr *ngFor="let task of tasks$ | async">
                <td>{{task.name}}</td>
-               <td>{{task.when}}</td>
-               <td>{{task.done}}</td>
+               <td>{{calculateDate(task.when)}}: {{task.when}}</td>
+               <td>{{isItDone(task.done)}}</td>
                <td>{{task.description}}</td>
                <td>{{getUserName(task.user)}}</td>
                <td>
@@ -72,6 +72,40 @@ export class TaskListComponent {
             });
         }
         return this.user[id].value.name || '';
+    }
+
+    calculateDate(date: Date | undefined): string {
+        if (!date) {
+            return 'No date';
+        }
+        // how to strip the hours and minutes from the date
+        date = new Date(date);
+        date.setHours(0, 0, 0, 0);
+        const today: Date = new Date();
+        today.setHours(0, 0, 0, 0);
+        const dateToCheck: Date = new Date(date);
+        const timeDifference: number = dateToCheck.getTime() - today.getTime();
+        const daysDifference: number = timeDifference / (1000 * 3600 * 24);
+        if (daysDifference < 0) {
+            if (daysDifference == -1) {
+                return 'Yesterday';
+            }
+            return `${Math.abs(daysDifference)} days ago`;
+        }
+        if (daysDifference == 0) {
+            return 'Today';
+        }
+        if (daysDifference == 1) {
+            return 'Tomorrow';
+        }
+        return `In ${daysDifference} days`;
+    }
+
+    isItDone(done: boolean | undefined): string {
+        if (typeof done === 'boolean' && done === true || typeof done === 'string' && done === 'true') {
+            return 'It\'s done!';
+        }
+        return 'It\'s not done!';
     }
 
     deleteTask(id: string): void {
