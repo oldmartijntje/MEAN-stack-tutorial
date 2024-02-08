@@ -1,14 +1,14 @@
 import * as express from "express";
 import * as mongodb from "mongodb";
-import { collections } from "../database";
+import { collections, tasks } from "../database";
 
 export const taskRouter = express.Router();
 taskRouter.use(express.json());
 
 taskRouter.get("/", async (_req, res) => {
     try {
-        const tasks = await collections.tasks.find({}).toArray();
-        res.status(200).send(tasks);
+        const foundTasks = await tasks.find({});
+        res.status(200).send(foundTasks);
     } catch (error) {
         res.status(500).send(error.message);
     }
@@ -17,7 +17,7 @@ taskRouter.get("/", async (_req, res) => {
 taskRouter.get("/filtered/:query", async (req, res) => {
     try {
         var query = JSON.parse(req?.params?.query);
-        // const tasks = await collections.tasks.find({}).toArray();
+        // const tasks = await tasks.find({});
         for (const key in query) {
             if (query[key] === '') {
                 delete query[key];
@@ -25,8 +25,8 @@ taskRouter.get("/filtered/:query", async (req, res) => {
                 query[key] = { $regex: query[key], $options: 'i' }
             }
         }
-        const tasks = await collections.tasks.find(query).toArray();
-        res.status(200).send(tasks);
+        const foundTasks = await tasks.find(query);
+        res.status(200).send(foundTasks);
     } catch (error) {
         res.status(500).send(error.message);
     }
