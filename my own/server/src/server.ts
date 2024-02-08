@@ -5,20 +5,20 @@ import { connectToDatabase } from "./database";
 import { taskRouter } from "./tasks/task.routes";
 import { userRouter } from "./users/user.routes";
 
-// Load environment variables from the .env file, where the ATLAS_URI is configured
+// Load environment variables from the .env file, where the MONGO_URI is configured
 dotenv.config();
 console.log("-Successfully loaded environment variables");
 
-const { ATLAS_URI } = process.env;
-console.log("-ATLAS_URI:", ATLAS_URI);
+const { MONGO_URI } = process.env;
+console.log("-MONGO_URI:", MONGO_URI);
 
-if (!ATLAS_URI) {
-    console.error("No ATLAS_URI environment variable has been defined in config.env");
+if (!MONGO_URI) {
+    console.error("No MONGO_URI environment variable has been defined in config.env");
     process.exit(1);
 }
-console.log("-ATLAS_URI is defined");
+console.log("-MONGO_URI is defined");
 
-connectToDatabase(ATLAS_URI)
+connectToDatabase(MONGO_URI)
     .then(() => {
         const app = express();
         console.log("-Connected to the database");

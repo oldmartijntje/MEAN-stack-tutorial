@@ -1,4 +1,5 @@
 import * as mongodb from "mongodb";
+import mongoose, { Document, Schema } from "mongoose";
 import { TaskInterface } from "./tasks/task.interface";
 import { userJsonSchema } from "./users/user.schema";
 import { UserInterface } from "./users/user.interface";
