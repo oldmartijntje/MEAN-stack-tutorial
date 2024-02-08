@@ -134,7 +134,12 @@ export class TaskFormComponent implements OnInit {
     }
 
     submitForm() {
-        this.taskForm.value.done = this.taskForm.value.done === 'true';
+        if (typeof this.taskForm.value.done === 'string' && this.taskForm.value.done === 'true') {
+            this.taskForm.value.done = true;
+        } else if (typeof this.taskForm.value.done === 'string' && this.taskForm.value.done === 'false') {
+            this.taskForm.value.done = false;
+        }
+
         this.formSubmitted.emit(this.taskForm.value);
     }
 }

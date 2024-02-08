@@ -12,18 +12,24 @@ export const collections: {
 
 export async function connectToDatabase(uri: string) {
     const client = new mongodb.MongoClient(uri);
+
+    console.log("-Connecting to the database");
     await client.connect();
+    console.log("-Connected to the database");
 
     const db = client.db("myMeanStackExample");
+    console.log("-Database 'myMeanStackExample' selected");
 
     // This has to be done for all collections that we want to have JSON schema validation on
     // for tasks
     await applySchemaValidation(db, taskJsonSchema, "tasks");
     collections.tasks = db.collection<TaskInterface>("tasks");
+    console.log("-Collection 'tasks' selected");
 
     // for tasks
     await applySchemaValidation(db, userJsonSchema, "users");
     collections.users = db.collection<UserInterface>("users");
+    console.log("-Collection 'users' selected");
 }
 
 // Update our existing collection with JSON schema validation so we know our documents will always match the shape of our Employee model, even if added elsewhere.
@@ -31,12 +37,13 @@ export async function connectToDatabase(uri: string) {
 async function applySchemaValidation(db: mongodb.Db, jsonSchema: any, collectionName = "invalidImplementation") {
 
     // Try applying the modification to the collection, if the collection doesn't exist, create it
+    console.log(`-Applying schema validation to collection '${collectionName}'`);
     await db.command({
-        collMod: collectionName,
-        validator: jsonSchema
+        collMod: collectionName
     }).catch(async (error: mongodb.MongoServerError) => {
+        console.error(`-Error applying schema validation to collection '${collectionName}'`);
         if (error.codeName === 'NamespaceNotFound') {
-            await db.createCollection(collectionName, { validator: jsonSchema });
+            await db.createCollection(collectionName);
         }
     });
 }
