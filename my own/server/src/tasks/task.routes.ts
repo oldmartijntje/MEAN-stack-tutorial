@@ -36,10 +36,10 @@ taskRouter.get("/:id", async (req, res) => {
     try {
         const id = req?.params?.id;
         const query = { _id: new mongodb.ObjectId(id) };
-        const task = await collections.tasks.findOne(query);
+        const task = await tasks.find(query);
 
         if (task) {
-            res.status(200).send(task);
+            res.status(200).send(task[0]);
         } else {
             res.status(404).send(`Failed to find an task: ID ${id}`);
         }
@@ -52,10 +52,10 @@ taskRouter.get("/:id", async (req, res) => {
 taskRouter.post("/", async (req, res) => {
     try {
         const task = req.body;
-        const result = await collections.tasks.insertOne(task);
-
-        if (result.acknowledged) {
-            res.status(201).send(`Created a new task: ID ${result.insertedId}.`);
+        const newTask = new tasks(task);
+        const result = await newTask.save()
+        if (result) {
+            res.status(201).send(`Created a new task: ID ${result._id}.`);
         } else {
             res.status(500).send("Failed to create a new task.");
         }
@@ -69,16 +69,22 @@ taskRouter.put("/:id", async (req, res) => {
     try {
         const id = req?.params?.id;
         const task = req.body;
-        const query = { _id: new mongodb.ObjectId(id) };
-        const result = await collections.tasks.updateOne(query, { $set: task });
-
-        if (result && result.matchedCount) {
-            res.status(200).send(`Updated an task: ID ${id}.`);
-        } else if (!result.matchedCount) {
-            res.status(404).send(`Failed to find an task: ID ${id}`);
+        const newTask = new tasks(task);
+        newTask._id = new mongodb.ObjectId(id);
+        const result = await tasks.replaceOne({ _id: new mongodb.ObjectId(id) }, newTask)
+        if (result) {
+            res.status(201).send(`Updated a task: ID ${id}.`);
         } else {
-            res.status(304).send(`Failed to update an task: ID ${id}`);
+            res.status(500).send("Failed to update a task.");
         }
+
+        // if (result && result.matchedCount) {
+        //     res.status(200).send(`Updated an task: ID ${id}.`);
+        // } else if (!result.matchedCount) {
+        //     res.status(404).send(`Failed to find an task: ID ${id}`);
+        // } else {
+        //     res.status(304).send(`Failed to update an task: ID ${id}`);
+        // }
     } catch (error) {
         console.error(error.message);
         res.status(400).send(error.message);
@@ -88,15 +94,12 @@ taskRouter.put("/:id", async (req, res) => {
 taskRouter.delete("/:id", async (req, res) => {
     try {
         const id = req?.params?.id;
-        const query = { _id: new mongodb.ObjectId(id) };
-        const result = await collections.tasks.deleteOne(query);
+        const result = await tasks.findByIdAndDelete(id);
 
-        if (result && result.deletedCount) {
-            res.status(202).send(`Removed an task: ID ${id}`);
-        } else if (!result) {
-            res.status(400).send(`Failed to remove an task: ID ${id}`);
-        } else if (!result.deletedCount) {
-            res.status(404).send(`Failed to find an task: ID ${id}`);
+        if (result) {
+            res.status(201).send(`Deleted a  task: ID ${id}.`);
+        } else {
+            res.status(500).send("Failed to delete a task.");
         }
     } catch (error) {
         console.error(error.message);
