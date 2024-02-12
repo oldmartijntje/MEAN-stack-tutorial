@@ -19,7 +19,6 @@ taskRouter.get("/filtered/:query", async (req, res) => {
         var query = JSON.parse(req?.params?.query);
         // const tasks = await tasks.find({});
         for (const key in query) {
-            console.log(key, query[key])
             if (query[key] == '') {
                 delete query[key];
             } else if (key == 'when') {
@@ -40,7 +39,6 @@ taskRouter.get("/filtered/:query", async (req, res) => {
                 query[key] = { $regex: query[key], $options: 'i' }
             }
         }
-        console.log(query);
         const foundTasks = await tasks.find(query);
         res.status(200).send(foundTasks);
     } catch (error) {

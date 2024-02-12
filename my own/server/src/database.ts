@@ -21,10 +21,4 @@ export const collections: {
 export async function connectToDatabase(uri: string) {
     const mongoose = require('mongoose');
     await mongoose.connect(uri);
-
-
-    const henk = new users({ name: 'henk', accessLevel: 1 });
-    console.log(henk.name);
-    console.log(henk.accessLevel);
-    // henk.save()
 }
