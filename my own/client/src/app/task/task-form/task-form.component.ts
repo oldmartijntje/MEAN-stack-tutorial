@@ -117,15 +117,17 @@ export class TaskFormComponent implements OnInit {
     ngOnInit() {
         this.fetchUsers();
         this.initialState.subscribe(task => {
+            if (task.user === undefined) {
+                task.user = ' ';
+            }
             this.taskForm = this.fb.group({
                 name: [task.name, [Validators.required]],
                 description: [task.description, []],
                 when: [task.when, [Validators.required]],
-                done: [task.done, [Validators.required]],
+                done: [task.done, []],
                 user: [task.user, []],
             });
         });
-
         this.taskForm.valueChanges.subscribe((val) => { this.formValuesChanged.emit(val); });
     }
 
