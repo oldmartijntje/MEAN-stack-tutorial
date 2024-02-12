@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { BehaviorSubject, Observable, take } from 'rxjs';
 
-import { TaskInterface } from '../task.interface';
+import { TaskFilterInterface, TaskInterface } from '../task.interface';
 import { BackendService } from '../../backendConnection/backend.service';
 import { UserInterface } from '../../user/user.interface';
 
@@ -26,8 +26,9 @@ import { UserInterface } from '../../user/user.interface';
            <tr>
                <th><input type="text" [(ngModel)]="filters.name" placeholder="Filter on names"></th>
                <th>
-                   <input type="text" [(ngModel)]="filters.when" id="when" placeholder="YYYY-MM-DD">
-                   <label class="form-check-label" for="when">(YYYY-MM-DD)</label>
+                   <input type="text" [(ngModel)]="filters.when" id="when" placeholder="startdate (YYYY or YYYY-MM-DD)">
+                   <input type="text" [(ngModel)]="filters.untillWhen" id="when" placeholder="enddate (YYYY or YYYY-MM-DD)">
+                   <label class="form-check-label" for="when">(YYYY or YYYY-MM-DD) timeframe</label>
                 </th>
                <th>
                     <div class="form-check">
@@ -83,7 +84,7 @@ export class TaskListComponent implements OnInit {
     user: { [key: string]: BehaviorSubject<UserInterface> } = {};
     userList$: Observable<UserInterface[]> = new Observable();
 
-    filters: TaskInterface = {};
+    filters: TaskFilterInterface = {};
     currentTasks: TaskInterface[] = [];
     filteredTasks: TaskInterface[] = [];
     filtered: boolean = false;

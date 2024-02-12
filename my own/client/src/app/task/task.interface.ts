@@ -6,3 +6,7 @@ export interface TaskInterface {
     user?: string;
     _id?: string;
 }
+
+export interface TaskFilterInterface extends TaskInterface {
+    untillWhen?: Date;
+}

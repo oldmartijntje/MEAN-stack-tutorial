@@ -19,12 +19,28 @@ taskRouter.get("/filtered/:query", async (req, res) => {
         var query = JSON.parse(req?.params?.query);
         // const tasks = await tasks.find({});
         for (const key in query) {
-            if (query[key] === '') {
+            console.log(key, query[key])
+            if (query[key] == '') {
                 delete query[key];
+            } else if (key == 'when') {
+                const startDate = new Date(query['when']);
+                const endDate = new Date(query['untillWhen']);
+                query[key] = {
+                    $gte: startDate,
+                    $lt: endDate,
+                }
+                delete query['untillWhen'];
+            } else if (key == 'user') {
+                if (query[key] == ' ') {
+                    query[key] = undefined;
+                } else {
+                    query[key] = new mongodb.ObjectId(query[key]);
+                }
             } else if (typeof query[key] === 'string') {
                 query[key] = { $regex: query[key], $options: 'i' }
             }
         }
+        console.log(query);
         const foundTasks = await tasks.find(query);
         res.status(200).send(foundTasks);
     } catch (error) {
@@ -54,6 +70,8 @@ taskRouter.post("/", async (req, res) => {
         const task = req.body;
         if (task.user == ' ') {
             task.user = undefined;
+        } else {
+            task.user = new mongodb.ObjectId(task.user);
         }
         const newTask = new tasks(task);
         const result = await newTask.save()
@@ -74,6 +92,8 @@ taskRouter.put("/:id", async (req, res) => {
         const task = req.body;
         if (task.user == ' ') {
             task.user = undefined;
+        } else {
+            task.user = new mongodb.ObjectId(task.user);
         }
         const newTask = new tasks(task);
         newTask._id = new mongodb.ObjectId(id);
