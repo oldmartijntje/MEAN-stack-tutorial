@@ -52,6 +52,9 @@ taskRouter.get("/:id", async (req, res) => {
 taskRouter.post("/", async (req, res) => {
     try {
         const task = req.body;
+        if (task.user == ' ') {
+            task.user = undefined;
+        }
         const newTask = new tasks(task);
         const result = await newTask.save()
         if (result) {
@@ -69,6 +72,9 @@ taskRouter.put("/:id", async (req, res) => {
     try {
         const id = req?.params?.id;
         const task = req.body;
+        if (task.user == ' ') {
+            task.user = undefined;
+        }
         const newTask = new tasks(task);
         newTask._id = new mongodb.ObjectId(id);
         const result = await tasks.replaceOne({ _id: new mongodb.ObjectId(id) }, newTask)
